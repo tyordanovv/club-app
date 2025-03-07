@@ -15,9 +15,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
+    @ExceptionHandler(ItemNotFoundException.class)
     public ResponseEntity<String> handleUserNotFoundException(
-            UserNotFoundException ex
+            ItemNotFoundException ex
     ) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }

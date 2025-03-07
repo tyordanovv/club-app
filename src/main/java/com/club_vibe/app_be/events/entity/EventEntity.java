@@ -1,8 +1,12 @@
 package com.club_vibe.app_be.events.entity;
 
-import com.club_vibe.app_be.staff.club.entity.ClubEntity;
-import com.club_vibe.app_be.staff.artist.entity.ArtistEntity;
-import com.club_vibe.app_be.staff.request.entity.RequestEntity;
+import com.club_vibe.app_be.common.enums.InvitationStatus;
+import com.club_vibe.app_be.events.dto.EventDTO;
+import com.club_vibe.app_be.users.artist.dto.ArtistDTO;
+import com.club_vibe.app_be.users.club.dto.ClubDTO;
+import com.club_vibe.app_be.users.club.entity.ClubEntity;
+import com.club_vibe.app_be.users.artist.entity.ArtistEntity;
+import com.club_vibe.app_be.users.request.entity.RequestEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,4 +44,20 @@ public class EventEntity {
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RequestEntity> requests = new ArrayList<>();
+
+    public EventDTO mapToEventResponseDTOWithCustomStatus(InvitationStatus status) {
+        return new EventDTO(
+                this.getId(),
+                this.getStartTime(),
+                this.getEndTime(),
+                this.isActive(),
+                new ClubDTO(
+                        this.getClub().getId(),
+                        this.getClub().getName()),
+                new ArtistDTO(
+                        this.getDj().getId(),
+                        this.getDj().getStageName()),
+                status.name()
+        );
+    }
 }
