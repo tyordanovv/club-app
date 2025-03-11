@@ -23,13 +23,16 @@ class StaffServiceIntegrationTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private static final String TEST_NAME = "Test Club";
+    private static final String TEST_EMAIL = "test_user@club.com";
+    private static final String TEST_PASSWORD = "password";
 
     @Test
     void testSaveAndFindStaff() {
         ClubEntity club = ClubEntity.builder()
-                .email("club@example.com")
-                .password(passwordEncoder.encode("secret"))
-                .name("Club Name")
+                .email(TEST_EMAIL)
+                .password(passwordEncoder.encode(TEST_PASSWORD))
+                .name(TEST_NAME)
                 .role(StaffRole.CLUB)
                 .build();
 
@@ -38,9 +41,9 @@ class StaffServiceIntegrationTest {
         assertNotNull(savedDto.id(), "Saved user should have an ID");
 
         // Retrieve the user by email and verify the details
-        StaffAuthenticationDTO fetchedDto = staffService.findStaffAuthByEmail("club@example.com");
+        StaffAuthenticationDTO fetchedDto = staffService.findStaffAuthByEmail(TEST_EMAIL);
         assertEquals(savedDto.id(), fetchedDto.id(), "IDs should match");
-        assertEquals("club@example.com", fetchedDto.email(), "Emails should match");
+        assertEquals(TEST_EMAIL, fetchedDto.email(), "Emails should match");
         assertEquals(StaffRole.CLUB, fetchedDto.role(), "Roles should match");
     }
 }

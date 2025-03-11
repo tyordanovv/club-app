@@ -14,24 +14,16 @@ import java.util.List;
 @Repository
 public interface ArtistInvitationRepository extends JpaRepository<ArtistInvitationEntity, Long> {
 
-    @Query("""
-                SELECT new com.club_vibe.app_be.staff.artist.dto.PendingInvitationDTO(
-                ai.id,
-                ai.eventId,
-                e.startTime,
-                ai.status,
-                c.name
-                )
-            FROM ArtistInvitationEntity ai
-                JOIN EventEntity e ON ai.eventId = e.id
-                JOIN ClubEntity c ON ai.club.id = c.id
-            WHERE ai.artist.id = :artistId
-                AND ai.status = :status
-                AND e.startTime > :now
-            """)
+    @Query(value = "SELECT ai.id as id, ai.event_id as eventId, e.start_time as startTime, ai.status as status, c.name as clubName " +
+            "FROM invitations ai " +
+            "JOIN events e ON ai.event_id = e.id " +
+            "JOIN clubs c ON ai.club_id = c.id " +
+            "WHERE ai.artist_id = :artistId AND ai.status = :status AND e.start_time > :now",
+            nativeQuery = true)
     List<PendingInvitationResponse> findPendingFutureInvitations(
             @Param("artistId") Long artistId,
-            @Param("status") InvitationStatus status,
+            @Param("status") String status,
             @Param("now") LocalDateTime now
     );
+
 }

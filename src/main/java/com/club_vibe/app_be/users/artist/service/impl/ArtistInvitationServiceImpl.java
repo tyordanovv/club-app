@@ -53,10 +53,10 @@ public class ArtistInvitationServiceImpl implements ArtistInvitationService {
     @Override
     public List<PendingInvitationResponse> getPendingInvitationsForCurrentArtist(Long artistId) {
         InvitationStatus status = InvitationStatus.PENDING;
-        log.info("Fetch {} Invitations for artist {}.", status, artistId);
+        log.info("Fetch {} Invitations for artist {}.", status.name(), artistId);
 
         return artistInvitationRepository.findPendingFutureInvitations(
-                artistId, status, LocalDateTime.now());
+                artistId, status.name(), LocalDateTime.now());
     }
 
     @Override

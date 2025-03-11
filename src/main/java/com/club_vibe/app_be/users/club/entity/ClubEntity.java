@@ -23,9 +23,9 @@ public class ClubEntity extends StaffEntity {
     @Column(unique = true)
     private String name;
 
+    @Embedded
+    private ClubAddress address;
+
     @Column(unique = true)
     private String qrCodeIdentifier = UUID.randomUUID().toString();
-
-    private String stripeAccountId;
-    private boolean stripeVerified = false;
 }

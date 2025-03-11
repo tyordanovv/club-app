@@ -20,7 +20,4 @@ public class ArtistEntity extends StaffEntity {
     @NotBlank
     @Column(unique = true)
     private String stageName;
-
-    private String stripeAccountId;
-    private boolean stripeVerified = false;
 }

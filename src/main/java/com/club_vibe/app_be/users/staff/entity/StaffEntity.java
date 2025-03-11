@@ -1,5 +1,6 @@
 package com.club_vibe.app_be.users.staff.entity;
 
+import com.club_vibe.app_be.common.enums.Country;
 import com.club_vibe.app_be.users.staff.role.StaffRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -34,6 +35,12 @@ public abstract class StaffEntity {
 
     @Enumerated(EnumType.STRING)
     private StaffRole role;
+
+    @Embedded
+    private StripeDetails stripeDetails;
+
+    @Enumerated(EnumType.STRING)
+    private Country country;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

@@ -17,6 +17,6 @@ public class ArtistInviteNotificationService implements InviteNotificationServic
 
     @Override
     public void notify(ArtistNotificationRequest request) {
-
+        log.info("Artist {} was notified.", request.artistId());
     }
 }

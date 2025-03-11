@@ -1,12 +1,16 @@
 package com.club_vibe.app_be.users.auth.controller;
 
 import com.club_vibe.app_be.common.exception.EmailAlreadyExistsException;
+import com.club_vibe.app_be.common.exception.ItemNotFoundException;
+import com.club_vibe.app_be.rabbitmq.event.ConnectedAccountEvent;
+import com.club_vibe.app_be.rabbitmq.producer.StripeProducer;
 import com.club_vibe.app_be.users.auth.dto.AuthRequest;
 import com.club_vibe.app_be.users.auth.dto.LoginResponse;
 import com.club_vibe.app_be.users.auth.dto.RefreshTokenRequest;
 import com.club_vibe.app_be.users.auth.dto.RegisterRequest;
 import com.club_vibe.app_be.users.auth.service.impl.AuthServiceImpl;
 import com.club_vibe.app_be.users.staff.repository.StaffRepository;
+import com.club_vibe.app_be.users.staff.service.StaffService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,18 +24,23 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class AuthController {
 
-    private AuthServiceImpl authService;
-    private StaffRepository staffRepository;
+    private final AuthServiceImpl authService;
+    private final StaffService staffService;
+    private final StripeProducer stripeProducer;
 
     @PostMapping("/register")
     public ResponseEntity<LoginResponse> register(
             @Valid @RequestBody RegisterRequest request
     ) {
-        if (staffRepository.findByEmail(request.email()).isPresent()) {
-            throw new EmailAlreadyExistsException(request.email());
+        try {
+            staffService.findStaffAuthByEmail(request.email());
+        } catch (ItemNotFoundException ex) {
+            LoginResponse response = authService.register(request);
+            stripeProducer.publishConnectedAccountCreationEvent(
+                    new ConnectedAccountEvent(request.country(), request.email()));
+            return ResponseEntity.ok(response);
         }
-
-        return ResponseEntity.ok(authService.register(request));
+        throw new EmailAlreadyExistsException(request.email());
     }
 
     @PostMapping("/login")
@@ -64,5 +73,4 @@ public class AuthController {
     public ResponseEntity<String> userOnly(@AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok("Hello User: " + userDetails.getUsername());
     }
-
 }

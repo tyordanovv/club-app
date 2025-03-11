@@ -28,7 +28,7 @@ class AuthServiceIntegrationTest {
     private PasswordEncoder passwordEncoder;
 
     private static final String TEST_NAME = "Test Club";
-    private static final String TEST_EMAIL = "test@club.com";
+    private static final String TEST_EMAIL = "test_user@club.com";
     private static final String TEST_PASSWORD = "password123";
     private static final String EXPECTED_ERROR_MESSAGE = "Bad credentials";
 

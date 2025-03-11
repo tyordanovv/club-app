@@ -20,9 +20,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
-    private final StaffService staffService; // Using interface for easier testing and decoupling
+    private final StaffService staffService;
     private final PasswordEncoder passwordEncoder;
-    private final JWTService jwtService; // Prefer interface for flexibility
+    private final JWTService jwtService;
     private final AuthenticationManager authenticationManager;
 
     @Override
@@ -33,12 +33,14 @@ public class AuthServiceImpl implements AuthService {
                     .password(passwordEncoder.encode(request.password()))
                     .name(request.name())
                     .role(StaffRole.CLUB)
+                    .country(request.country())
                     .build();
             case ARTIST -> ArtistEntity.builder()
                     .email(request.email())
                     .password(passwordEncoder.encode(request.password()))
                     .stageName(request.name())
                     .role(StaffRole.ARTIST)
+                    .country(request.country())
                     .build();
         };
 

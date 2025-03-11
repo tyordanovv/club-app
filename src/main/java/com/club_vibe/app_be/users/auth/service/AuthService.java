@@ -1,5 +1,6 @@
 package com.club_vibe.app_be.users.auth.service;
 
+import com.club_vibe.app_be.stripe.accounts.dto.create.CreateConnectedAccountResponse;
 import com.club_vibe.app_be.users.auth.dto.AuthRequest;
 import com.club_vibe.app_be.users.auth.dto.LoginResponse;
 import com.club_vibe.app_be.users.auth.dto.RefreshTokenRequest;

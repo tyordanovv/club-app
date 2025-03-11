@@ -5,25 +5,19 @@ import com.club_vibe.app_be.stripe.accounts.dto.onboarding.GenerateOnboardingLin
 import com.club_vibe.app_be.stripe.accounts.dto.status.AccountStatusResponse;
 import com.club_vibe.app_be.stripe.accounts.dto.create.CreateConnectedAccountResponse;
 import com.club_vibe.app_be.stripe.accounts.dto.onboarding.GenerateOnboardingLinkResponse;
+import com.club_vibe.app_be.stripe.accounts.service.ConnectedAccountService;
+import com.stripe.exception.SignatureVerificationException;
+import com.stripe.exception.StripeException;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/connected-accounts")
 public class ConnectedAccountController {
-
-    /**
-     * Create a new Stripe connected account
-     * @param request {@link CreateConnectedAccountRequest}
-     * @return {@link CreateConnectedAccountResponse}
-     */
-    @PostMapping
-    public ResponseEntity<CreateConnectedAccountResponse> createConnectedAccount(
-            @RequestBody CreateConnectedAccountRequest request
-    ) {
-        // TODO
-        return ResponseEntity.ok(new CreateConnectedAccountResponse(null));
-    }
+    private final ConnectedAccountService connectedAccountService;
 
     /**
      * Generate onboarding link for KYC verification
@@ -35,9 +29,9 @@ public class ConnectedAccountController {
     public ResponseEntity<GenerateOnboardingLinkResponse> generateOnboardingLink(
             @PathVariable String accountId,
             @RequestBody GenerateOnboardingLinkRequest request
-    ) {
-        // TODO
-        return ResponseEntity.ok(new GenerateOnboardingLinkResponse(null));
+    ) throws StripeException {
+        String onboardingUrl = connectedAccountService.generateOnboardingLink(accountId, request);
+        return ResponseEntity.ok(new GenerateOnboardingLinkResponse(onboardingUrl));
     }
 
     /**
@@ -48,23 +42,8 @@ public class ConnectedAccountController {
     @GetMapping("/{accountId}/status")
     public ResponseEntity<AccountStatusResponse> getAccountStatus(
             @PathVariable String accountId
-    ) {
-        // TODO
-        return ResponseEntity.ok(new AccountStatusResponse(true, true, true));
-    }
-
-    /**
-     * Webhook endpoint for Stripe account events
-     * @param payload
-     * @param sigHeader
-     * @return {@link Void}
-     */
-    @PostMapping("/webhook")
-    public ResponseEntity<Void> handleStripeAccountWebhook(
-            @RequestBody String payload,
-            @RequestHeader("Stripe-Signature") String sigHeader
-    ) {
-        // TODO
-        return ResponseEntity.ok().build();
+    ) throws StripeException {
+        AccountStatusResponse status = connectedAccountService.getAccountStatus(accountId);
+        return ResponseEntity.ok(status);
     }
 }

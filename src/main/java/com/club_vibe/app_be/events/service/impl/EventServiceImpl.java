@@ -5,6 +5,7 @@ import com.club_vibe.app_be.events.dto.EventDTO;
 import com.club_vibe.app_be.events.dto.request.CreateEventRequest;
 import com.club_vibe.app_be.events.entity.EventEntity;
 import com.club_vibe.app_be.events.repository.EventRepository;
+import com.club_vibe.app_be.events.service.EventInvitationOrchestrator;
 import com.club_vibe.app_be.events.service.EventService;
 import com.club_vibe.app_be.notification.service.InviteNotificationService;
 import com.club_vibe.app_be.users.artist.entity.ArtistEntity;
@@ -20,11 +21,11 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Slf4j
 public class EventServiceImpl implements EventService {
-    private final ArtistManagementServiceImpl artistManagementService;
+    private final EventInvitationOrchestrator invitationOrchestrator;
     private final EventRepository eventRepository;
-    private final InviteNotificationService notificationService;
     @PersistenceContext
     private EntityManager entityManager;
+
 
     @Override
     public EventDTO createEventAndInviteArtist(CreateEventRequest request, Long clubId) {
@@ -32,12 +33,12 @@ public class EventServiceImpl implements EventService {
         event.setStartTime(request.startTime());
         event.setEndTime(request.endTime());
         event.setActive(false);
-        event.setClub(entityManager.find(ClubEntity.class, clubId));
-        event.setDj(entityManager.find(ArtistEntity.class, request.artistId()));
+        event.setClub(entityManager.find(ClubEntity.class, clubId)); //TODO add check if clubId is valid
+        event.setDj(entityManager.find(ArtistEntity.class, request.artistId()));//TODO add check if artistId is valid
 
         EventEntity savedEvent = eventRepository.save(event);
 
-        Thread.startVirtualThread(() -> artistManagementService.inviteToEvent(savedEvent.getId(), clubId, request.artistId()));
+        handleInvitationAsynchronously(savedEvent.getId(), clubId, request.artistId());
 
         return savedEvent.mapToEventResponseDTOWithCustomStatus(InvitationStatus.PENDING);
     }
@@ -45,5 +46,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public void activateEvent(Long id) {
         eventRepository.updateEventStatus(id, true);
+    }
+
+    private void handleInvitationAsynchronously(Long eventId, Long clubId, Long artistId){
+        Thread.startVirtualThread(() ->
+                invitationOrchestrator.inviteArtistToEvent(eventId, clubId, artistId)
+        );
     }
 }

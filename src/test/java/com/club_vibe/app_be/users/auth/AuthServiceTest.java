@@ -1,6 +1,7 @@
 package com.club_vibe.app_be.users.auth;
 
 import com.club_vibe.app_be.common.exception.InvalidTokenException;
+import com.club_vibe.app_be.stripe.accounts.dto.create.CreateConnectedAccountResponse;
 import com.club_vibe.app_be.users.artist.entity.ArtistEntity;
 import com.club_vibe.app_be.users.auth.dto.AuthRequest;
 import com.club_vibe.app_be.users.auth.dto.LoginResponse;
