@@ -1,7 +1,8 @@
 package com.club_vibe.app_be.stripe.payments.entity;
 
-import com.club_vibe.app_be.users.request.entity.RequestEntity;
+import com.club_vibe.app_be.request.entity.RequestEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,14 +20,22 @@ public class PaymentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(precision = 10, scale = 2)
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 
-    @Column(unique = true)
+    @Column(nullable = false, name = "currency")
+    private String currency;
+
+    @Column(nullable = false, unique = true, name = "stripe_intent_id")
     private String stripePaymentIntentId;
+
 
     private LocalDateTime timestamp = LocalDateTime.now();
 
-    @OneToOne(mappedBy = "payment")
+    @Column(nullable = false, name = "stripe_payment_status")
+    private StripePaymentStatus status;
+
+    @OneToOne
+    @JoinColumn(nullable = false, name = "request_id", referencedColumnName = "id")
     private RequestEntity request;
 }

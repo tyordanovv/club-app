@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 public interface ArtistService {
+    String NAME = "Artist";
 
     /**
      *

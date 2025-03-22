@@ -9,32 +9,34 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class ArtistServiceImpl implements ArtistService {
+
     private final ArtistRepository artistRepository;
     private final ArtistMapper artistMapper;
 
     @Override
     public List<ArtistDTO> getAllArtists() {
-        return artistRepository.findAll().stream()
+        return artistRepository.findAll()
+                .stream()
                 .map(artistMapper::mapArtistToDTO)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
     public ArtistDTO findById(Long artistId) {
         return artistRepository.findById(artistId)
                 .map(artistMapper::mapArtistToDTO)
-                .orElseThrow(() -> new ItemNotFoundException(artistId.toString()));
+                .orElseThrow(() -> new ItemNotFoundException(NAME, artistId.toString()));
     }
 
     @Override
     public ArtistDTO findByEmail(String email) {
         return artistRepository.findByEmail(email)
                 .map(artistMapper::mapArtistToDTO)
-                .orElseThrow(() -> new ItemNotFoundException(email));
+                .orElseThrow(() -> new ItemNotFoundException(NAME, email));
     }
 }
-

@@ -1,7 +1,7 @@
 package com.club_vibe.app_be.events.controller;
 
-import com.club_vibe.app_be.events.dto.request.CreateEventRequest;
-import com.club_vibe.app_be.events.dto.EventDTO;
+import com.club_vibe.app_be.events.dto.create.CreateEventRequest;
+import com.club_vibe.app_be.events.dto.create.CreateEventResponse;
 import com.club_vibe.app_be.events.service.EventService;
 import com.club_vibe.app_be.users.auth.service.CurrentUserService;
 import jakarta.validation.Valid;
@@ -24,14 +24,13 @@ public class EventController {
      * @param request event creation request with artist invitation
      * @return created event details
      */
-    @PostMapping()
+    @PostMapping
     @PreAuthorize("hasRole('CLUB')")
-    public ResponseEntity<EventDTO> createEvent(
+    public ResponseEntity<CreateEventResponse> createEvent(
             @Valid @RequestBody CreateEventRequest request
     ) {
-        Long clubId = currentUserService.getCurrentUserId();
-
-        EventDTO createdEvent = eventService.createEventAndInviteArtist(request, clubId);
-        return new ResponseEntity<>(createdEvent, HttpStatus.CREATED);
+        Long clubId = currentUserService.getCurrentUserPlatformId();
+        CreateEventResponse createdEvent = eventService.createEventAndInviteArtist(request, clubId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
     }
 }

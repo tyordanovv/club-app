@@ -36,6 +36,7 @@ specific roles (ARTIST, CLUB) can access certain resources.
 ### Stripe Integration
 1. Connected Accounts & KYC:
 The application integrates with Stripe to create and manage connected accounts for users.
+Idempotency keys to prevent duplicate charges
 
 2. Payment service:
 

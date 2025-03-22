@@ -1,46 +1,38 @@
 package com.club_vibe.app_be.events.service.impl;
 
 import com.club_vibe.app_be.common.enums.InvitationStatus;
+import com.club_vibe.app_be.common.exception.InactiveEventException;
+import com.club_vibe.app_be.common.exception.ItemNotFoundException;
+import com.club_vibe.app_be.common.util.validator.PercentageValidator;
+import com.club_vibe.app_be.events.EventMapper;
 import com.club_vibe.app_be.events.dto.EventDTO;
-import com.club_vibe.app_be.events.dto.request.CreateEventRequest;
+import com.club_vibe.app_be.events.dto.create.CreateEventRequest;
+import com.club_vibe.app_be.events.dto.create.CreateEventResponse;
 import com.club_vibe.app_be.events.entity.EventEntity;
 import com.club_vibe.app_be.events.repository.EventRepository;
 import com.club_vibe.app_be.events.service.EventInvitationOrchestrator;
 import com.club_vibe.app_be.events.service.EventService;
-import com.club_vibe.app_be.notification.service.InviteNotificationService;
 import com.club_vibe.app_be.users.artist.entity.ArtistEntity;
-import com.club_vibe.app_be.users.artist.service.impl.ArtistManagementServiceImpl;
 import com.club_vibe.app_be.users.club.entity.ClubEntity;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class EventServiceImpl implements EventService {
+
     private final EventInvitationOrchestrator invitationOrchestrator;
     private final EventRepository eventRepository;
-    @PersistenceContext
-    private EntityManager entityManager;
-
+    private final EntityManager entityManager;
+    private final EventMapper eventMapper;
 
     @Override
-    public EventDTO createEventAndInviteArtist(CreateEventRequest request, Long clubId) {
-        EventEntity event = new EventEntity();
-        event.setStartTime(request.startTime());
-        event.setEndTime(request.endTime());
-        event.setActive(false);
-        event.setClub(entityManager.find(ClubEntity.class, clubId)); //TODO add check if clubId is valid
-        event.setDj(entityManager.find(ArtistEntity.class, request.artistId()));//TODO add check if artistId is valid
-
+    public CreateEventResponse createEventAndInviteArtist(CreateEventRequest request, Long clubId) {
+        EventEntity event = buildEvent(request, clubId);
         EventEntity savedEvent = eventRepository.save(event);
-
-        handleInvitationAsynchronously(savedEvent.getId(), clubId, request.artistId());
-
-        return savedEvent.mapToEventResponseDTOWithCustomStatus(InvitationStatus.PENDING);
+        triggerArtistInvitationAsync(savedEvent.getId(), clubId, request.artistId());
+        return eventMapper.toCreateEventResponse(savedEvent, InvitationStatus.PENDING);
     }
 
     @Override
@@ -48,9 +40,39 @@ public class EventServiceImpl implements EventService {
         eventRepository.updateEventStatus(id, true);
     }
 
-    private void handleInvitationAsynchronously(Long eventId, Long clubId, Long artistId){
-        Thread.startVirtualThread(() ->
-                invitationOrchestrator.inviteArtistToEvent(eventId, clubId, artistId)
+    @Override
+    public EventDTO findEventById(Long id) throws ItemNotFoundException {
+        System.out.println("SERVER FIND ALL " + eventRepository.findAll());
+        return eventMapper.toEventDTO(
+                eventRepository.findById(id)
+                        .orElseThrow(() -> new ItemNotFoundException(NAME, id.toString()))
         );
+    }
+
+    @Override
+    public EventDTO validateAndGetEvent(Long eventId) throws InactiveEventException {
+        //TODO add validation if correct artist and club are connected
+        EventDTO event = findEventById(eventId);
+        if (!event.isActive()) throw new InactiveEventException(eventId);
+        return event;
+    }
+
+    private EventEntity buildEvent(CreateEventRequest request, Long clubId) {
+        PercentageValidator.validateArtistPercentage(request.artistPercentage());
+        PercentageValidator.validateClubPercentage(request.clubPercentage());
+
+        EventEntity event = new EventEntity();
+        event.setStartTime(request.startTime());
+        event.setEndTime(request.endTime());
+        event.setActive(false);
+        event.setClub(entityManager.find(ClubEntity.class, clubId)); // TODO Consider additional validations
+        event.setArtist(entityManager.find(ArtistEntity.class, request.artistId())); // TODO Consider additional validations
+        event.setArtistPercentage(request.artistPercentage());
+        event.setClubPercentage(request.clubPercentage());
+        return event;
+    }
+
+    private void triggerArtistInvitationAsync(Long eventId, Long clubId, Long artistId) {
+        Thread.startVirtualThread(() -> invitationOrchestrator.inviteArtistToEvent(eventId, clubId, artistId));
     }
 }

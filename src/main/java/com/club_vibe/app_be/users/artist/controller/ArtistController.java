@@ -1,7 +1,7 @@
 package com.club_vibe.app_be.users.artist.controller;
 
 import com.club_vibe.app_be.users.artist.dto.ArtistDTO;
-import com.club_vibe.app_be.users.artist.service.impl.ArtistServiceImpl;
+import com.club_vibe.app_be.users.artist.service.ArtistService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,14 +15,14 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/api/v1/artists")
 public class ArtistController {
-    private final ArtistServiceImpl artistService;
+    private final ArtistService artistService;
 
     /**
      * Endpoint to fetch all artists for club to select from
      *
      * @return list of all artists
      */
-    @GetMapping()
+    @GetMapping
     @PreAuthorize("hasRole('CLUB')")
     public ResponseEntity<List<ArtistDTO>> getAllArtists() {
         List<ArtistDTO> artists = artistService.getAllArtists();

@@ -24,11 +24,12 @@ public class ArtistInvitationController {
     /**
      * Get pending invitations for the currently authenticated artist
      */
-    @GetMapping()
+    @GetMapping
     @PreAuthorize("hasRole('ARTIST')")
     public ResponseEntity<List<PendingInvitationResponse>> getPendingInvitations() {
-        Long artistId = currentUserService.getCurrentUserId();
-        return ResponseEntity.ok(artistInvitationService.getPendingInvitationsForCurrentArtist(artistId));
+        Long artistId = currentUserService.getCurrentUserPlatformId();
+        List<PendingInvitationResponse> pendingInvitations = artistInvitationService.getPendingInvitationsForCurrentArtist(artistId);
+        return ResponseEntity.ok(pendingInvitations);
     }
 
     /**
@@ -37,12 +38,12 @@ public class ArtistInvitationController {
      * @param requests response details (accept/decline)
      * @return updated event details
      */
-    @PatchMapping()
+    @PatchMapping
     @PreAuthorize("hasRole('ARTIST')")
     public ResponseEntity<Void> respondToInvitation(
             @Valid @RequestBody List<InvitationArtistConfirmationRequest> requests
     ) {
-        Long artistId = currentUserService.getCurrentUserId();
+        Long artistId = currentUserService.getCurrentUserPlatformId();
         artistManagementService.respondToInvitations(requests, artistId);
         return ResponseEntity.accepted().build();
     }

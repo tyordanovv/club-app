@@ -22,7 +22,7 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public StaffAuthenticationDTO findStaffAuthByEmail(String email) throws ItemNotFoundException {
         StaffEntity staff = staffRepository.findByEmail(email)
-                .orElseThrow(() -> new ItemNotFoundException(email));
+                .orElseThrow(() -> new ItemNotFoundException(NAME, email));
         return staffMapper.mapStaffToAuthDTO(staff);
     }
 

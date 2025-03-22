@@ -10,10 +10,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class CurrentUserServiceImpl implements CurrentUserService {
     @Override
-    public Long getCurrentUserId() {
+    public Long getCurrentUserPlatformId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof StaffUserDetails) {
-            return ((StaffUserDetails) authentication.getPrincipal()).getId();
+            return ((StaffUserDetails) authentication.getPrincipal()).getProgramId();
+        }
+        throw new AccessDeniedException("User not authenticated");
+    }
+    @Override
+    public String getCurrentUserStripeAccountId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof StaffUserDetails) {
+            return ((StaffUserDetails) authentication.getPrincipal()).getStripeAccountId();
         }
         throw new AccessDeniedException("User not authenticated");
     }

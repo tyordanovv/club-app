@@ -1,6 +1,7 @@
 package com.club_vibe.app_be.common.exception.service;
 
 import com.club_vibe.app_be.common.exception.EmailAlreadyExistsException;
+import com.club_vibe.app_be.common.exception.ErrorResponse;
 import com.club_vibe.app_be.common.exception.InvalidTokenException;
 import com.club_vibe.app_be.common.exception.ItemNotFoundException;
 import com.stripe.exception.StripeException;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,10 +27,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ItemNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFoundException(
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(
             ItemNotFoundException ex
     ) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(
+                "ITEM_NOT_FOUND",
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
     @ExceptionHandler(InvalidTokenException.class)
@@ -57,9 +63,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGenericException(
-            Exception ex
-    ) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                "INTERNAL_SERVER_ERROR",
+                "An unexpected error occurred" + ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 }

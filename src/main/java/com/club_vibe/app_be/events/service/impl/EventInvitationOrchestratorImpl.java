@@ -19,37 +19,50 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 @Slf4j
 public class EventInvitationOrchestratorImpl implements EventInvitationOrchestrator {
+
     private final ArtistInvitationService artistInvitationService;
     private final ArtistInviteNotificationService artistInviteNotificationService;
     private final ClubInviteNotificationService clubInviteNotificationService;
-    private final EventProducer rabbitMQPublisher;
+    private final EventProducer eventProducer;
+
     @Override
     public void inviteArtistToEvent(Long eventId, Long clubId, Long artistId) {
+        createInvitation(eventId, clubId, artistId);
+        notifyArtist(artistId);
+    }
+
+    @Transactional
+    @Override
+    public void processInvitationResponse(InvitationArtistConfirmationRequest request, Long artistId) {
+        ArtistInvitationDTO invitation = artistInvitationService.validateArtistInvitation(request.invitationId(), artistId);
+        if (request.isAccepted()) {
+            publishActivationEvent(request.invitationId());
+        }
+        notifyClub(invitation, request);
+        artistInvitationService.updateInvitationStatus(request);
+    }
+
+    private void createInvitation(Long eventId, Long clubId, Long artistId) {
         artistInvitationService.createNewArtistInvitation(eventId, clubId, artistId);
+    }
+
+    private void notifyArtist(Long artistId) {
         artistInviteNotificationService.notify(new ArtistNotificationRequest(artistId));
     }
 
-    @Override
-    @Transactional
-    public void processInvitationResponse(InvitationArtistConfirmationRequest request, Long artistId) {
-        ArtistInvitationDTO invitation = artistInvitationService.validateArtistInvitation(request.invitationId(), artistId);
-        boolean isAccepted = request.isAccepted();
+    private void publishActivationEvent(Long invitationId) {
+        ActivationEvent activationEvent = new ActivationEvent(invitationId);
+        eventProducer.publishActivationEvent(activationEvent);
+        log.info("Published activation event: {}", activationEvent);
+    }
 
-        if (isAccepted) {
-            ActivationEvent activationEvent = new ActivationEvent(request.invitationId());
-            rabbitMQPublisher.publishActivationEvent(activationEvent);
-            log.info("Published invitation event: {}", activationEvent);
-        }
-
-        clubInviteNotificationService.notify(
-                new ClubNotificationRequest(
-                        invitation.clubId(),
-                        invitation.artistId(),
-                        isAccepted,
-                        request.responseMessage()
-                )
+    private void notifyClub(ArtistInvitationDTO invitation, InvitationArtistConfirmationRequest request) {
+        ClubNotificationRequest clubNotification = new ClubNotificationRequest(
+                invitation.clubId(),
+                invitation.artistId(),
+                request.isAccepted(),
+                request.responseMessage()
         );
-
-        artistInvitationService.updateInvitationStatus(request);
+        clubInviteNotificationService.notify(clubNotification);
     }
 }

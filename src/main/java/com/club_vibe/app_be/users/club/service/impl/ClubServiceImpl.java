@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class ClubServiceImpl implements ClubService {
+
     private final ClubRepository clubRepository;
     private final ClubMapper clubMapper;
 
@@ -18,7 +19,6 @@ public class ClubServiceImpl implements ClubService {
     public ClubDTO findByEmail(String clubEmail) {
         return clubRepository.findByEmail(clubEmail)
                 .map(clubMapper::mapClubToDTO)
-                .orElseThrow(() -> new ItemNotFoundException("Club not found"));
-
+                .orElseThrow(() -> new ItemNotFoundException(NAME, clubEmail));
     }
 }

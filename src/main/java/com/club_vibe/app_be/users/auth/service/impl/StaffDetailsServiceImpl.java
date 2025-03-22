@@ -32,7 +32,8 @@ public class StaffDetailsServiceImpl implements UserDetailsService {
                 staff.getEmail(),
                 staff.getPassword(),
                 authorities,
-                staff.getId()
+                staff.getId(),
+                staff.getStripeDetails().getAccountId()
         );
     }
 }

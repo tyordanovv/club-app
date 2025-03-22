@@ -10,6 +10,7 @@ import com.club_vibe.app_be.users.staff.entity.StaffEntity;
  *
  */
 public interface StaffService {
+    String NAME = "Staff";
     /**
      *
      * @param email {@link String} Email of the user

@@ -1,14 +1,10 @@
 package com.club_vibe.app_be.stripe.accounts.controller;
 
-import com.club_vibe.app_be.stripe.accounts.dto.create.CreateConnectedAccountRequest;
 import com.club_vibe.app_be.stripe.accounts.dto.onboarding.GenerateOnboardingLinkRequest;
 import com.club_vibe.app_be.stripe.accounts.dto.status.AccountStatusResponse;
-import com.club_vibe.app_be.stripe.accounts.dto.create.CreateConnectedAccountResponse;
 import com.club_vibe.app_be.stripe.accounts.dto.onboarding.GenerateOnboardingLinkResponse;
 import com.club_vibe.app_be.stripe.accounts.service.ConnectedAccountService;
-import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

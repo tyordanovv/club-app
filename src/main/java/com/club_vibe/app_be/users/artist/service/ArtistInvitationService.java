@@ -7,6 +7,8 @@ import com.club_vibe.app_be.users.artist.dto.PendingInvitationResponse;
 import java.util.List;
 
 public interface ArtistInvitationService {
+    String NAME = "Artist Invitation";
+
     /**
      *
      * @param eventId

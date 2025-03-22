@@ -1,21 +1,26 @@
 package com.club_vibe.app_be.users.auth.config;
 
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.Collection;
 
+@Getter
 public class StaffUserDetails extends User {
-    private final Long id;
+    private final Long programId;
+    private final String stripeAccountId;
 
-    public StaffUserDetails(String username, String password,
-                            Collection<? extends GrantedAuthority> authorities,
-                            Long id) {
+    public StaffUserDetails(
+            String username,
+            String password,
+            Collection<? extends GrantedAuthority> authorities,
+            Long programId,
+            String stripeAccountId
+    ) {
         super(username, password, authorities);
-        this.id = id;
+        this.programId = programId;
+        this.stripeAccountId = stripeAccountId;
     }
 
-    public Long getId() {
-        return id;
-    }
 }
