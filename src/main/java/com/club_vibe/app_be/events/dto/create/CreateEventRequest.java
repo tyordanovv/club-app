@@ -1,5 +1,4 @@
 package com.club_vibe.app_be.events.dto.create;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;

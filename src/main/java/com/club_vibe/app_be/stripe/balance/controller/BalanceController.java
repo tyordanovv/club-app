@@ -16,12 +16,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class BalanceController {
     private final BalanceService balanceService;
 
+    /**
+     *
+     * @return
+     */
     @GetMapping("/artist")
     public ResponseEntity<ArtistBalanceResponse> getArtistBalance() {
         ArtistBalanceResponse balance = balanceService.getArtistBalance();
         return ResponseEntity.ok(balance);
     }
 
+    /**
+     *
+     * @return
+     */
     @GetMapping("/club")
     public ResponseEntity<ClubBalanceResponse> getClubBalance() {
         ClubBalanceResponse balance = balanceService.getClubBalance();

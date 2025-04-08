@@ -27,6 +27,7 @@ public class PaymentProcessingController {
 
     /**
      * Authorize a payment (without capturing)
+     *
      * @param request {@link AuthorizePaymentRequest}
      * @param idempotencyKey {@link String}
      * @return {@link AuthorizePaymentResponse}
@@ -43,7 +44,8 @@ public class PaymentProcessingController {
     }
 
     /**
-     * Capture a previously authorized payment and split funds
+     * Artist captures a previously authorized payment and split funds between him, the club and the platform.
+     *
      * @param paymentId {@link Long}
      * @param idempotencyKey
      * @return {@link CapturePaymentResponse}
@@ -85,20 +87,5 @@ public class PaymentProcessingController {
     ) {
         // TODO
         return ResponseEntity.ok(new RefundPaymentResponse(null));
-    }
-
-    /**
-     * Webhook endpoint for Stripe payment events
-     * @param payload {@link String}
-     * @param sigHeader {@link String}
-     * @return {@link Void}
-     */
-    @PostMapping("/webhook")
-    public ResponseEntity<Void> handleStripePaymentWebhook(
-            @RequestBody String payload,
-            @RequestHeader("Stripe-Signature") String sigHeader
-    ) {
-        // TODO
-        return ResponseEntity.ok().build();
     }
 }

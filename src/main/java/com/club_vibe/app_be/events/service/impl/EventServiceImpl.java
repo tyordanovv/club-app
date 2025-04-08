@@ -12,11 +12,15 @@ import com.club_vibe.app_be.events.entity.EventEntity;
 import com.club_vibe.app_be.events.repository.EventRepository;
 import com.club_vibe.app_be.events.service.EventInvitationOrchestrator;
 import com.club_vibe.app_be.events.service.EventService;
+import com.club_vibe.app_be.events.dto.EventRequestsResponse;
 import com.club_vibe.app_be.users.artist.entity.ArtistEntity;
 import com.club_vibe.app_be.users.club.entity.ClubEntity;
 import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -42,7 +46,6 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventDTO findEventById(Long id) throws ItemNotFoundException {
-        System.out.println("SERVER FIND ALL " + eventRepository.findAll());
         return eventMapper.toEventDTO(
                 eventRepository.findById(id)
                         .orElseThrow(() -> new ItemNotFoundException(NAME, id.toString()))
@@ -55,6 +58,21 @@ public class EventServiceImpl implements EventService {
         EventDTO event = findEventById(eventId);
         if (!event.isActive()) throw new InactiveEventException(eventId);
         return event;
+    }
+
+    @Override
+    public EventRequestsResponse getEventRequests(Long staffId) {
+        Optional<EventEntity> event = findActiveEventByUserId(staffId);
+        return event.map(eventEntity -> new EventRequestsResponse(
+                eventEntity.getId(),
+                eventMapper.toEventRequests(eventEntity)
+        )).orElseGet(() -> new EventRequestsResponse(null, null));
+
+    }
+
+    private Optional<EventEntity> findActiveEventByUserId(Long staffId) {
+        LocalDateTime now = LocalDateTime.now();
+        return eventRepository.findActiveEventByStaffId(staffId, now);
     }
 
     private EventEntity buildEvent(CreateEventRequest request, Long clubId) {

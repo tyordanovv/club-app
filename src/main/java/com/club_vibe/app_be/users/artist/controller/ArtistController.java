@@ -18,7 +18,7 @@ public class ArtistController {
     private final ArtistService artistService;
 
     /**
-     * Endpoint to fetch all artists for club to select from
+     * Endpoint to fetch all artists for club to select from. TODO implement paging later
      *
      * @return list of all artists
      */

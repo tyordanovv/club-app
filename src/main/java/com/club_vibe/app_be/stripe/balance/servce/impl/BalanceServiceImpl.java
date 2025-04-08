@@ -9,8 +9,8 @@ import com.club_vibe.app_be.stripe.balance.dto.club.ClubBalanceResponse;
 import com.club_vibe.app_be.stripe.balance.dto.club.ClubEarningDto;
 import com.club_vibe.app_be.stripe.balance.dto.club.ClubEventEarning;
 import com.club_vibe.app_be.stripe.balance.servce.BalanceService;
-import com.club_vibe.app_be.stripe.balance.servce.StripeBalanceClient;
-import com.club_vibe.app_be.stripe.mapper.StripeBalanceMapper;
+import com.club_vibe.app_be.stripe.config.StripeClient;
+import com.club_vibe.app_be.stripe.balance.mapper.StripeBalanceMapper;
 import com.club_vibe.app_be.stripe.payments.entity.partial.PaymentAllocationType;
 import com.club_vibe.app_be.stripe.payments.repository.PartialPaymentRepository;
 import com.club_vibe.app_be.users.auth.service.CurrentUserService;
@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class BalanceServiceImpl implements BalanceService {
     private final CurrentUserService currentUserService;
-    private final StripeBalanceClient stripeClient;
+    private final StripeClient stripeClient;
     private final PartialPaymentRepository partialPaymentRepository;
     private final StripeBalanceMapper stripeBalanceMapper;
 
@@ -99,7 +98,6 @@ public class BalanceServiceImpl implements BalanceService {
     }
 
     private List<ArtistPaymentDetail> getArtistMonthlyPayments(String artistStripeAccountId) {
-        // Find all payments made to this artist in the current month
         List<ArtistPaymentDto> results = partialPaymentRepository.findArtistPaymentsByMonth(
                 artistStripeAccountId,
                 PaymentAllocationType.ARTIST,

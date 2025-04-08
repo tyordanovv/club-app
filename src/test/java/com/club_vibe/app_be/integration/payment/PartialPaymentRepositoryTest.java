@@ -36,8 +36,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-//@DataJpaTest
-//@ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureTestDatabase
 @Transactional

@@ -1,8 +1,10 @@
 package com.club_vibe.app_be.stripe.payout.entity;
 
+import com.club_vibe.app_be.common.embedable.MoneyAmount;
 import com.club_vibe.app_be.common.enums.PayoutStatus;
 import com.club_vibe.app_be.users.club.entity.ClubEntity;
 import com.club_vibe.app_be.users.artist.entity.ArtistEntity;
+import com.club_vibe.app_be.users.staff.entity.StaffEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,8 +22,8 @@ public class PayoutEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(precision = 10, scale = 2)
-    private BigDecimal amount;
+    @Embedded
+    private MoneyAmount moneyAmount;
 
     private String stripePayoutId;
 
@@ -29,10 +31,6 @@ public class PayoutEntity {
     private PayoutStatus status = PayoutStatus.PENDING;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dj_id")
-    private ArtistEntity dj;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "club_id")
-    private ClubEntity club;
+    @JoinColumn(name = "staff_id")
+    private StaffEntity staff;
 }

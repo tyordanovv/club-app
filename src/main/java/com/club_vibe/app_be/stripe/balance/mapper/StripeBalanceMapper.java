@@ -1,4 +1,4 @@
-package com.club_vibe.app_be.stripe.mapper;
+package com.club_vibe.app_be.stripe.balance.mapper;
 
 import com.club_vibe.app_be.stripe.balance.dto.artist.BalanceFunds;
 import com.stripe.model.Balance;

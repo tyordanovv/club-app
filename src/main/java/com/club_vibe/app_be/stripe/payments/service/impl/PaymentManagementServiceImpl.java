@@ -2,6 +2,7 @@ package com.club_vibe.app_be.stripe.payments.service.impl;
 
 import com.club_vibe.app_be.common.util.Amount;
 import com.club_vibe.app_be.events.dto.EventDTO;
+import com.club_vibe.app_be.events.dto.RequestStatus;
 import com.club_vibe.app_be.events.service.EventService;
 import com.club_vibe.app_be.request.service.RequestService;
 import com.club_vibe.app_be.stripe.payments.dto.CreatePaymentRequest;
@@ -32,6 +33,7 @@ public class PaymentManagementServiceImpl implements PaymentManagementService {
     private final PaymentProcessingService paymentProcessingService;
     private final PaymentDataAccessService paymentDataAccessService;
     private final PartialPaymentService partialPaymentService;
+
     @Override
     public AuthorizePaymentResponse authorizePayment(AuthorizePaymentRequest authRequest, String idempotencyKey) throws StripeException {
         Amount amount = Amount.fromAuthRequest(authRequest);
@@ -52,6 +54,7 @@ public class PaymentManagementServiceImpl implements PaymentManagementService {
                 eventDetails.artist().stripeDetails().getAccountId());
 
         paymentDataAccessService.updatePaymentAfterAuthentication(payment, authResponse);
+        // TODO update the request status
 
         return authResponse;
     }

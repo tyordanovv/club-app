@@ -1,5 +1,6 @@
 package com.club_vibe.app_be.common.util;
 
+import com.club_vibe.app_be.common.embedable.MoneyAmount;
 import com.club_vibe.app_be.stripe.payments.dto.authorize.AuthorizePaymentRequest;
 import com.stripe.model.PaymentIntent;
 import lombok.Getter;
@@ -9,6 +10,8 @@ import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.util.Currency;
 import java.util.Locale;
+
+import static com.club_vibe.app_be.common.util.DefaultPlatformValues.PLATFORM_CURRENCY;
 
 /**
  * Represents an amount in a specific currency, handling formatting and calculations.
@@ -52,6 +55,18 @@ public class Amount {
      */
     public static Amount of(Double value, String currencyCode) {
         return new Amount(BigDecimal.valueOf(value), Currency.getInstance(currencyCode));
+    }
+
+    /**
+     * Creates an Amount from a double and a currency code
+     * The {@link Currency} class handles the initialization of its object and the validation of the data.
+     * The expected currency string is expected to be in format ISO 4217
+     *
+     * @param value the payment amount as {@link BigDecimal}.
+     * @param currencyCode {@link String} value of the currency code.
+     */
+    public static Amount of(BigDecimal value, String currencyCode) {
+        return new Amount(value, Currency.getInstance(currencyCode));
     }
 
     /**
@@ -130,6 +145,13 @@ public class Amount {
     public Amount convertTo(Currency targetCurrency, BigDecimal exchangeRate) {
         BigDecimal convertedValue = value.multiply(exchangeRate);
         return new Amount(convertedValue, targetCurrency);
+    }
+
+    public MoneyAmount toMoneyAmount() {
+        return MoneyAmount.builder()
+                .amount(this.value)
+                .currency(this.currency.getCurrencyCode())
+                .build();
     }
 
     @Override

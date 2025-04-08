@@ -1,13 +1,13 @@
-package com.club_vibe.app_be.integration.payment;
+package com.club_vibe.app_be.unit.stripe.balance;
 
 import com.club_vibe.app_be.stripe.balance.dto.artist.ArtistBalanceResponse;
 import com.club_vibe.app_be.stripe.balance.dto.artist.ArtistPaymentDto;
 import com.club_vibe.app_be.stripe.balance.dto.artist.BalanceFunds;
 import com.club_vibe.app_be.stripe.balance.dto.club.ClubBalanceResponse;
 import com.club_vibe.app_be.stripe.balance.dto.club.ClubEarningDto;
-import com.club_vibe.app_be.stripe.balance.servce.StripeBalanceClient;
+import com.club_vibe.app_be.stripe.config.StripeClient;
 import com.club_vibe.app_be.stripe.balance.servce.impl.BalanceServiceImpl;
-import com.club_vibe.app_be.stripe.mapper.StripeBalanceMapper;
+import com.club_vibe.app_be.stripe.balance.mapper.StripeBalanceMapper;
 import com.club_vibe.app_be.stripe.payments.entity.StripePaymentStatus;
 import com.club_vibe.app_be.stripe.payments.entity.partial.PaymentAllocationType;
 import com.club_vibe.app_be.stripe.payments.repository.PartialPaymentRepository;
@@ -32,12 +32,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class BalanceServiceIntegrationTest {
+public class BalanceServiceImplTest {
     @Mock
     private CurrentUserService currentUserService;
 
     @Mock
-    private StripeBalanceClient stripeClient;
+    private StripeClient stripeClient;
 
     @Mock
     private PartialPaymentRepository partialPaymentRepository;
@@ -48,7 +48,7 @@ public class BalanceServiceIntegrationTest {
     @InjectMocks
     private BalanceServiceImpl balanceService;
 
-    private String testStripeAccountId = "acct_test123";
+    private final String testStripeAccountId = "acct_test123";
 
     @BeforeEach
     void setUp() {

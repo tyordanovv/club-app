@@ -5,6 +5,9 @@ import com.club_vibe.app_be.common.exception.ItemNotFoundException;
 import com.club_vibe.app_be.events.dto.create.CreateEventRequest;
 import com.club_vibe.app_be.events.dto.EventDTO;
 import com.club_vibe.app_be.events.dto.create.CreateEventResponse;
+import com.club_vibe.app_be.events.dto.EventRequestsResponse;
+
+import java.util.Optional;
 
 public interface EventService {
     String NAME = "Event";
@@ -41,4 +44,11 @@ public interface EventService {
      * @throws InactiveEventException is thrown, when the event was not activated.
      */
     EventDTO validateAndGetEvent(Long eventId) throws InactiveEventException;
+
+    /**
+     *
+     * @param userId
+     * @return
+     */
+    EventRequestsResponse getEventRequests(Long userId);
 }

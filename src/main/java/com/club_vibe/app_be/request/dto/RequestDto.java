@@ -1,5 +1,6 @@
 package com.club_vibe.app_be.request.dto;
 
+import com.club_vibe.app_be.events.dto.RequestStatus;
 import com.club_vibe.app_be.request.entity.RequestType;
 
 /**
@@ -8,7 +9,6 @@ import com.club_vibe.app_be.request.entity.RequestType;
  * @param type
  * @param title
  * @param message
- * @param guestEmail
  */
 public record RequestDto(
         Long requestId,
@@ -18,6 +18,5 @@ public record RequestDto(
         String title,
 
         String message,
-        String guestEmail
-) {
-}
+        RequestStatus status
+) { }

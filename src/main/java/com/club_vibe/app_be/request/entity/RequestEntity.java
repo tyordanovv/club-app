@@ -1,5 +1,6 @@
 package com.club_vibe.app_be.request.entity;
 
+import com.club_vibe.app_be.events.dto.RequestStatus;
 import com.club_vibe.app_be.events.entity.EventEntity;
 import com.club_vibe.app_be.stripe.payments.entity.PaymentEntity;
 import jakarta.persistence.*;
@@ -10,6 +11,7 @@ import lombok.*;
 @Entity
 @Table(name = "requests")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequestEntity {
@@ -26,6 +28,9 @@ public class RequestEntity {
 
     @Column(name = "message")
     private String message;
+
+    @Column(name = "status")
+    private RequestStatus status;
 
     @Email
     @NotBlank

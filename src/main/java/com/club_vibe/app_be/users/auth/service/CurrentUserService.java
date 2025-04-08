@@ -1,5 +1,7 @@
 package com.club_vibe.app_be.users.auth.service;
 
+import java.util.Optional;
+
 public interface CurrentUserService {
 
     /**

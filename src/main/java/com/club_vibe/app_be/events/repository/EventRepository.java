@@ -8,11 +8,22 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 @Repository
 public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
     @Modifying
     @Transactional
     @Query("UPDATE EventEntity e SET e.isActive = :status WHERE e.id = :id")
-    void updateEventStatus(@Param("id") Long id, @Param("status") boolean status);
+    void updateEventStatus(@Param("id") Long id,
+                           @Param("status") boolean status);
+
+    @Query("SELECT e FROM EventEntity e " +
+            "WHERE e.isActive = true " +
+            "AND (:now BETWEEN e.startTime AND e.endTime) " +
+            "AND (e.club.id = :staffId OR e.artist.id = :staffId)")
+    Optional<EventEntity> findActiveEventByStaffId(@Param("staffId") Long staffId,
+                                                   @Param("now") LocalDateTime now);
 }
