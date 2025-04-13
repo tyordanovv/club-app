@@ -28,14 +28,15 @@ public class EventMapper {
                         event.getClub().getId(),
                         event.getClub().getName(),
                         event.getClub().getStripeDetails(),
-                        event.getClubPercentage()
+                        event.getConditions().getClubPercentage()
                         ),
                 new ArtistDetails(
                         event.getArtist().getId(),
                         event.getArtist().getStageName(),
                         event.getArtist().getStripeDetails(),
-                        event.getArtistPercentage()
+                        event.getConditions().getArtistPercentage()
                         )
+
         );
     }
 

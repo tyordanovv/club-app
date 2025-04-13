@@ -29,18 +29,16 @@ public class EventEntity {
     @Column(nullable = false, name = "end_time")
     private LocalDateTime endTime;
 
-    @Column(nullable = false, name = "artist_percentage")
-    private BigDecimal artistPercentage;
-
-    @Column(nullable = false, name = "club_percentage")
-    private BigDecimal clubPercentage;
-
     @Column(nullable = false, name = "is_active")
     private boolean isActive = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "club_id")
     private ClubEntity club;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(nullable = false, name = "conditions_id")
+    private EventConditionsEntity conditions;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "artist_id")

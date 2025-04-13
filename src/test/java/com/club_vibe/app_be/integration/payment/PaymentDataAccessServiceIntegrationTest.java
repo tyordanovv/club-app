@@ -3,7 +3,10 @@ package com.club_vibe.app_be.integration.payment;
 import com.club_vibe.app_be.common.enums.Country;
 import com.club_vibe.app_be.common.exception.ItemNotFoundException;
 import com.club_vibe.app_be.common.util.Amount;
+import com.club_vibe.app_be.events.entity.EventConditionsEntity;
 import com.club_vibe.app_be.events.entity.EventEntity;
+import com.club_vibe.app_be.events.entity.RequestSettings;
+import com.club_vibe.app_be.helpers.EventTestHelper;
 import com.club_vibe.app_be.integration.config.TestPaymentData;
 import com.club_vibe.app_be.request.entity.RequestEntity;
 import com.club_vibe.app_be.request.entity.RequestType;
@@ -96,8 +99,7 @@ public class PaymentDataAccessServiceIntegrationTest {
         EventEntity event = new EventEntity();
         event.setStartTime(LocalDateTime.now().minusHours(1));
         event.setEndTime(LocalDateTime.now().plusHours(2));
-        event.setArtistPercentage(new BigDecimal("60.00"));
-        event.setClubPercentage(new BigDecimal("20.00"));
+        event.setConditions(EventTestHelper.createDefaultEventConditionsEntity());
         event.setActive(true);
         event.setClub(savedClub);
         event.setArtist(savedArtist);
@@ -251,8 +253,7 @@ public class PaymentDataAccessServiceIntegrationTest {
         EventEntity eventWithClubNoAccount = new EventEntity();
         eventWithClubNoAccount.setStartTime(LocalDateTime.now());
         eventWithClubNoAccount.setEndTime(LocalDateTime.now().plusHours(2));
-        eventWithClubNoAccount.setArtistPercentage(new BigDecimal("60.00"));
-        eventWithClubNoAccount.setClubPercentage(new BigDecimal("20.00"));
+        eventWithClubNoAccount.setConditions(EventTestHelper.createDefaultEventConditionsEntity());
         eventWithClubNoAccount.setActive(true);
         eventWithClubNoAccount.setClub(clubWithoutAccount);
         eventWithClubNoAccount.setArtist(savedArtist);
@@ -308,10 +309,9 @@ public class PaymentDataAccessServiceIntegrationTest {
         EventEntity eventWithArtistNoAccount = new EventEntity();
         eventWithArtistNoAccount.setStartTime(LocalDateTime.now());
         eventWithArtistNoAccount.setEndTime(LocalDateTime.now().plusHours(2));
-        eventWithArtistNoAccount.setArtistPercentage(new BigDecimal("30.00"));
-        eventWithArtistNoAccount.setClubPercentage(new BigDecimal("70.00"));
+        eventWithArtistNoAccount.setConditions(EventTestHelper.createDefaultEventConditionsEntity());
         eventWithArtistNoAccount.setActive(true);
-        eventWithArtistNoAccount.setClub(savedClub); // Use existing club
+        eventWithArtistNoAccount.setClub(savedClub);
         eventWithArtistNoAccount.setArtist(artistWithoutAccount);
 
         entityManager.persist(eventWithArtistNoAccount);
@@ -354,8 +354,9 @@ public class PaymentDataAccessServiceIntegrationTest {
         EventEntity eventWithInvalidPercentages = new EventEntity();
         eventWithInvalidPercentages.setStartTime(LocalDateTime.now());
         eventWithInvalidPercentages.setEndTime(LocalDateTime.now().plusHours(2));
-        eventWithInvalidPercentages.setArtistPercentage(new BigDecimal("60.00"));
-        eventWithInvalidPercentages.setClubPercentage(new BigDecimal("50.00"));
+        EventConditionsEntity eventConditions = EventTestHelper.createDefaultEventConditionsEntity();
+        eventConditions.setClubPercentage(BigDecimal.valueOf(80));
+        eventWithInvalidPercentages.setConditions(eventConditions);
         eventWithInvalidPercentages.setActive(true);
         eventWithInvalidPercentages.setClub(savedClub);
         eventWithInvalidPercentages.setArtist(savedArtist);

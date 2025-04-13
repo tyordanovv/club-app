@@ -3,6 +3,7 @@ package com.club_vibe.app_be.integration.payment;
 import com.club_vibe.app_be.common.enums.Country;
 import com.club_vibe.app_be.events.entity.EventEntity;
 import com.club_vibe.app_be.events.repository.EventRepository;
+import com.club_vibe.app_be.helpers.EventTestHelper;
 import com.club_vibe.app_be.integration.config.TestPaymentData;
 import com.club_vibe.app_be.stripe.payments.dto.authorize.AuthorizePaymentRequest;
 import com.club_vibe.app_be.stripe.payments.dto.authorize.AuthorizePaymentResponse;
@@ -117,8 +118,7 @@ public class StripePaymentIntegrationTest {
             EventEntity event = new EventEntity();
             event.setStartTime(LocalDateTime.now().minusHours(1));
             event.setEndTime(LocalDateTime.now().plusHours(2));
-            event.setArtistPercentage(new BigDecimal("60.00"));
-            event.setClubPercentage(new BigDecimal("20.00"));
+            event.setConditions(EventTestHelper.createDefaultEventConditionsEntity());
             event.setActive(true);
             event.setClub(savedClub);
             event.setArtist(savedArtist);

@@ -1,8 +1,14 @@
 package com.club_vibe.app_be.integration.event;
 
+import com.club_vibe.app_be.common.exception.ItemNotFoundException;
+import com.club_vibe.app_be.common.util.DefaultPlatformValues;
+import com.club_vibe.app_be.events.dto.EventDTO;
+import com.club_vibe.app_be.events.entity.EventConditionsEntity;
 import com.club_vibe.app_be.events.entity.EventEntity;
+import com.club_vibe.app_be.events.entity.RequestSettings;
 import com.club_vibe.app_be.events.repository.EventRepository;
 import com.club_vibe.app_be.events.service.EventService;
+import com.club_vibe.app_be.helpers.EventTestHelper;
 import com.club_vibe.app_be.users.artist.entity.ArtistEntity;
 import com.club_vibe.app_be.users.artist.repository.ArtistRepository;
 import com.club_vibe.app_be.users.club.entity.ClubEntity;
@@ -26,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 public class EventServiceIntegrationTest {
     @Autowired
-    private EventService eventService; // Service under test
+    private EventService eventService;
 
     @Autowired
     private EventRepository eventRepository;
@@ -47,6 +53,8 @@ public class EventServiceIntegrationTest {
                 .password("password")
                 .role(StaffRole.CLUB)
                 .name("Test Club")
+                .artistPercentage(DefaultPlatformValues.ARTIST_COMMISSION)
+                .clubPercentage(DefaultPlatformValues.CLUB_COMMISSION)
                 .build();
         club = clubRepository.save(club);
 
@@ -67,21 +75,24 @@ public class EventServiceIntegrationTest {
         EventEntity event = new EventEntity();
         event.setStartTime(now.minusHours(1));
         event.setEndTime(now.plusHours(1));
-        event.setActive(true);
+        event.setActive(false);
         event.setClub(club);
-        event.setClubPercentage(BigDecimal.valueOf(20));
         event.setArtist(artist);
-        event.setArtistPercentage(BigDecimal.valueOf(60));
+        event.setConditions(EventTestHelper.createDefaultEventConditionsEntity());
         event = eventRepository.save(event);
 
-        Optional<Long> result = eventService.findActiveEventByUserId(club.getId());
-        assertTrue(result.isPresent(), "Expected an active event for the given club id");
-        assertEquals(event.getId(), result.get(), "The returned event id should match the persisted event");
+        EventDTO result = eventService.findEventById(event.getId());
+        assertNotNull(result, "Expected an active event for the given club id");
+        assertEquals(event.getId(), result.id(), "The returned event id should match the persisted event");
+        assertFalse(result.isActive());
+        assertEquals(DefaultPlatformValues.ARTIST_COMMISSION, result.artist().percentage());
+        assertEquals(DefaultPlatformValues.CLUB_COMMISSION, result.club().percentage());
+        assertEquals(event.getStartTime(), result.startTime());
+        assertEquals(event.getEndTime(), result.endTime());
     }
 
     @Test
     public void testFindActiveEventByUserId_NoActiveEvent() {
-        Optional<Long> result = eventService.findActiveEventByUserId(club.getId());
-        assertFalse(result.isPresent(), "Expected no active event for the given club id");
+        assertThrows(ItemNotFoundException.class, () -> eventService.findEventById(1L));
     }
 }

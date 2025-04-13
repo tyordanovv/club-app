@@ -1,8 +1,11 @@
 package com.club_vibe.app_be.integration.payment;
 
 import com.club_vibe.app_be.common.enums.Country;
+import com.club_vibe.app_be.events.entity.EventConditionsEntity;
 import com.club_vibe.app_be.events.entity.EventEntity;
+import com.club_vibe.app_be.events.entity.RequestSettings;
 import com.club_vibe.app_be.events.repository.EventRepository;
+import com.club_vibe.app_be.helpers.EventTestHelper;
 import com.club_vibe.app_be.request.entity.RequestEntity;
 import com.club_vibe.app_be.request.entity.RequestType;
 import com.club_vibe.app_be.request.repository.RequestRepository;
@@ -60,6 +63,7 @@ class PartialPaymentRepositoryTest {
     private RequestEntity request;
     private PaymentEntity payment;
 
+
     @BeforeEach
     void setUp() {
         setupTestData();
@@ -90,7 +94,7 @@ class PartialPaymentRepositoryTest {
         assertThat(result).isNotEmpty();
         assertThat(result).hasSize(1);
 
-        ArtistPaymentDto dto = result.get(0);
+        ArtistPaymentDto dto = result.getFirst();
         assertThat(dto.getAmount()).isEqualByComparingTo(BigDecimal.valueOf(50.00));
         assertThat(dto.getCurrency()).isEqualTo("USD");
         assertThat(dto.getStatus()).isEqualTo(payment.getStatus());
@@ -127,7 +131,7 @@ class PartialPaymentRepositoryTest {
         assertThat(result).isNotEmpty();
         assertThat(result).hasSize(1);
 
-        ClubEarningDto dto = result.get(0);
+        ClubEarningDto dto = result.getFirst();
         assertThat(dto.getAmount()).isEqualByComparingTo(BigDecimal.valueOf(50.00)); // 30 + 20
         assertThat(dto.getCurrencyCode()).isEqualTo("USD");
         assertThat(dto.getPaymentCount()).isEqualTo(2L);
@@ -176,8 +180,7 @@ class PartialPaymentRepositoryTest {
         event = new EventEntity();
         event.setStartTime(LocalDateTime.now().plusDays(7));
         event.setEndTime(LocalDateTime.now().plusDays(7).plusHours(3));
-        event.setArtistPercentage(BigDecimal.valueOf(70));
-        event.setClubPercentage(BigDecimal.valueOf(30));
+        event.setConditions(EventTestHelper.createDefaultEventConditionsEntity());
         event.setActive(true);
         event.setClub(club);
         event.setArtist(artist);
@@ -196,7 +199,7 @@ class PartialPaymentRepositoryTest {
         payment = new PaymentEntity();
         payment.setAmount(BigDecimal.valueOf(100.00));
         payment.setCurrency("USD");
-        payment.setStripePaymentIntentId("pi_" + UUID.randomUUID().toString());
+        payment.setStripePaymentIntentId("pi_" + UUID.randomUUID());
         payment.setTimestamp(LocalDateTime.now());
         payment.setStatus(StripePaymentStatus.AUTHENTICATED);
         payment.setRequest(request);

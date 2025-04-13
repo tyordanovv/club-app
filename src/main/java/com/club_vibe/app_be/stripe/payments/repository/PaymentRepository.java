@@ -14,11 +14,12 @@ public interface PaymentRepository extends JpaRepository<PaymentEntity, Long> {
     @Query("SELECT new com.club_vibe.app_be.stripe.payments.dto.PaymentSplitDetails" +
             "(p.id, COALESCE(club.stripeDetails.accountId, ''), " +
             "COALESCE(artist.stripeDetails.accountId, ''), " +
-            "COALESCE(event.clubPercentage, 20), " +
-            "COALESCE(event.artistPercentage, 60)) " +
+            "conditions.clubPercentage, " +
+            "conditions.artistPercentage) " +
             "FROM PaymentEntity p " +
             "JOIN p.request r " +
             "JOIN r.event event " +
+            "JOIN event.conditions conditions " +
             "JOIN event.club club " +
             "JOIN event.artist artist " +
             "WHERE p.stripePaymentIntentId = :paymentIntentId")

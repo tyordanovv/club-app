@@ -26,7 +26,7 @@ public class TestPaymentData {
 
     // Test connected accounts (replace with your test connected accounts)
     public static final String TEST_CLUB_ACCOUNT_ID = "acct_1R15uSPSpR2zHjd3"; //Tihomir Yordanov
-    public static final String TEST_ARTIST_ACCOUNT_ID = "acct_1R3aqGPLx9RH31Jt"; //Tihomir Yourdanov 2
+    public static final String TEST_ARTIST_ACCOUNT_ID = "acct_1R3aqGPLx9RH31Jt"; //Tihomir Yordanov 2
 
     // Test event and request data
     public static final Long TEST_EVENT_ID = 123L;

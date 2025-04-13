@@ -3,18 +3,22 @@ package com.club_vibe.app_be.events.service.impl;
 import com.club_vibe.app_be.common.enums.InvitationStatus;
 import com.club_vibe.app_be.common.exception.InactiveEventException;
 import com.club_vibe.app_be.common.exception.ItemNotFoundException;
-import com.club_vibe.app_be.common.util.validator.PercentageValidator;
 import com.club_vibe.app_be.events.EventMapper;
 import com.club_vibe.app_be.events.dto.EventDTO;
 import com.club_vibe.app_be.events.dto.create.CreateEventRequest;
 import com.club_vibe.app_be.events.dto.create.CreateEventResponse;
+import com.club_vibe.app_be.events.entity.EventConditionsEntity;
 import com.club_vibe.app_be.events.entity.EventEntity;
+import com.club_vibe.app_be.events.repository.EventConditionsRepository;
 import com.club_vibe.app_be.events.repository.EventRepository;
+import com.club_vibe.app_be.events.service.EventFactory;
 import com.club_vibe.app_be.events.service.EventInvitationOrchestrator;
 import com.club_vibe.app_be.events.service.EventService;
 import com.club_vibe.app_be.events.dto.EventRequestsResponse;
 import com.club_vibe.app_be.users.artist.entity.ArtistEntity;
+import com.club_vibe.app_be.users.club.dto.ClubArtistPercentage;
 import com.club_vibe.app_be.users.club.entity.ClubEntity;
+import com.club_vibe.app_be.users.club.service.ClubService;
 import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,11 +34,12 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final EntityManager entityManager;
     private final EventMapper eventMapper;
+    private final EventConditionsRepository conditionsRepository;
+    private final ClubService clubService;
 
     @Override
     public CreateEventResponse createEventAndInviteArtist(CreateEventRequest request, Long clubId) {
-        EventEntity event = buildEvent(request, clubId);
-        EventEntity savedEvent = eventRepository.save(event);
+        EventEntity savedEvent = eventRepository.save(buildEvent(request, clubService.findClubArtistPercentage(clubId), clubId));
         triggerArtistInvitationAsync(savedEvent.getId(), clubId, request.artistId());
         return eventMapper.toCreateEventResponse(savedEvent, InvitationStatus.PENDING);
     }
@@ -75,18 +80,15 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findActiveEventByStaffId(staffId, now);
     }
 
-    private EventEntity buildEvent(CreateEventRequest request, Long clubId) {
-        PercentageValidator.validateArtistPercentage(request.artistPercentage());
-        PercentageValidator.validateClubPercentage(request.clubPercentage());
-
+    private EventEntity buildEvent(CreateEventRequest request, ClubArtistPercentage percentages, Long clubId) {
+        EventConditionsEntity eventConditions = EventFactory.createConditions(request.conditions(), percentages);
         EventEntity event = new EventEntity();
         event.setStartTime(request.startTime());
         event.setEndTime(request.endTime());
         event.setActive(false);
+        event.setConditions(eventConditions);
         event.setClub(entityManager.find(ClubEntity.class, clubId)); // TODO Consider additional validations
         event.setArtist(entityManager.find(ArtistEntity.class, request.artistId())); // TODO Consider additional validations
-        event.setArtistPercentage(request.artistPercentage());
-        event.setClubPercentage(request.clubPercentage());
         return event;
     }
 

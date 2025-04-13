@@ -9,8 +9,6 @@ import java.time.LocalDateTime;
  * @param startTime
  * @param endTime
  * @param artistId
- * @param artistPercentage
- * @param clubPercentage
  */
 public record CreateEventRequest(
         @NotNull(message = "Start Time is required")
@@ -19,8 +17,6 @@ public record CreateEventRequest(
         LocalDateTime endTime,
         @NotNull(message = "Artist Id is required")
         Long artistId,
-        @NotNull(message = "Artist percentage is required")
-        BigDecimal artistPercentage,
-        @NotNull(message = "Club percentage is required")
-        BigDecimal clubPercentage
+        @NotNull(message = "Conditions are required")
+        CreateEventConditionsRequest conditions
 ) {}
