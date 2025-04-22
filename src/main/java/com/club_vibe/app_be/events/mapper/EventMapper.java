@@ -1,4 +1,4 @@
-package com.club_vibe.app_be.events;
+package com.club_vibe.app_be.events.mapper;
 
 import com.club_vibe.app_be.common.enums.InvitationStatus;
 import com.club_vibe.app_be.events.dto.EventDTO;
@@ -6,9 +6,7 @@ import com.club_vibe.app_be.events.dto.EventRequest;
 import com.club_vibe.app_be.events.dto.create.CreateEventResponse;
 import com.club_vibe.app_be.events.entity.EventEntity;
 import com.club_vibe.app_be.request.dto.RequestDto;
-import com.club_vibe.app_be.request.entity.RequestEntity;
 import com.club_vibe.app_be.stripe.payments.entity.PaymentEntity;
-import com.club_vibe.app_be.stripe.payments.entity.StripePaymentStatus;
 import com.club_vibe.app_be.users.artist.dto.ArtistDetails;
 import com.club_vibe.app_be.users.club.dto.ClubDetails;
 import org.springframework.stereotype.Component;

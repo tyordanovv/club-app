@@ -3,7 +3,7 @@ package com.club_vibe.app_be.events.service.impl;
 import com.club_vibe.app_be.common.enums.InvitationStatus;
 import com.club_vibe.app_be.common.exception.InactiveEventException;
 import com.club_vibe.app_be.common.exception.ItemNotFoundException;
-import com.club_vibe.app_be.events.EventMapper;
+import com.club_vibe.app_be.events.mapper.EventMapper;
 import com.club_vibe.app_be.events.dto.EventDTO;
 import com.club_vibe.app_be.events.dto.create.CreateEventRequest;
 import com.club_vibe.app_be.events.dto.create.CreateEventResponse;

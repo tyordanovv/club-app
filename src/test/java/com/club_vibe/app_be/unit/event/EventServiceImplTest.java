@@ -4,27 +4,21 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.club_vibe.app_be.common.enums.InvitationStatus;
-import com.club_vibe.app_be.common.util.DefaultPlatformValues;
-import com.club_vibe.app_be.events.EventMapper;
+import com.club_vibe.app_be.events.mapper.EventMapper;
 import com.club_vibe.app_be.events.dto.EventDTO;
 import com.club_vibe.app_be.events.dto.create.CreateEventRequest;
 import com.club_vibe.app_be.events.dto.create.CreateEventResponse;
-import com.club_vibe.app_be.events.entity.EventConditionsEntity;
 import com.club_vibe.app_be.events.entity.EventEntity;
-import com.club_vibe.app_be.events.entity.RequestSettings;
 import com.club_vibe.app_be.events.repository.EventConditionsRepository;
 import com.club_vibe.app_be.events.repository.EventRepository;
 import com.club_vibe.app_be.events.service.EventInvitationOrchestrator;
 import com.club_vibe.app_be.events.service.impl.EventServiceImpl;
 import com.club_vibe.app_be.helpers.EventTestHelper;
-import com.club_vibe.app_be.users.artist.dto.ArtistDTO;
 import com.club_vibe.app_be.users.artist.dto.ArtistDetails;
 import com.club_vibe.app_be.users.artist.entity.ArtistEntity;
-import com.club_vibe.app_be.users.club.dto.ClubDTO;
 import com.club_vibe.app_be.users.club.dto.ClubDetails;
 import com.club_vibe.app_be.users.club.entity.ClubEntity;
 import com.club_vibe.app_be.users.club.service.ClubService;
